@@ -1,34 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { GameState } from './models/GameState';
+import { createDeck, shuffleDeck } from './utils/deck';
+import Hand from './components/Hand';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [gameState, setGameState] = useState(GameState.NOTDEALT);
+  const [deck, setDeck] = useState(shuffleDeck(createDeck()));
+  
+  const [playerHand, setPlayerHand] = useState([]);
+  const [dealerHand, setDealerHand] = useState([]);
+  const [discardPile, setDiscardPile] = useState([]);
+
+  const deal = () => {
+    setGameState(GameState.PLAYING);
+    drawCard(playerHand, setPlayerHand);
+    drawCard(dealerHand, setDealerHand, false);
+    drawCard(playerHand, setPlayerHand);
+    drawCard(dealerHand, setDealerHand);
+  };
+
+  const drawCard = (hand, setHand, faceUp=true) => {
+    if (deck.length === 0) {
+      alert('No more cards in the deck!');
+      return;
+    }
+    const newCard = deck.pop(); // Remove the top card
+    newCard.faceUp = faceUp;
+    setHand((prev) => [...prev, newCard]);
+    setDeck(deck);
+  };
 
   return (
-    <>
+    <div>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <h1>Dealer</h1>
+        <div>
+          <div>
+            <Hand cards={dealerHand}></Hand>
+          </div>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      <div>
+        <h1>Player</h1>
+        <div>
+          <div>
+            <Hand cards={playerHand}></Hand>
+          </div>
+          <div>
+            {gameState === GameState.NOTDEALT 
+              ? <button onClick={deal}>Deal</button>
+              : <><button>Hit</button><button>Stand</button></>
+            }
+          </div>
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 
