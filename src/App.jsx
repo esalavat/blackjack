@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { GameState } from './models/GameState';
 import { createDeck, shuffleDeck } from './utils/deck';
+import total from './utils/total';
 import Hand from './components/Hand';
 import './App.css';
 
@@ -20,6 +21,10 @@ function App() {
     drawCard(dealerHand, setDealerHand);
   };
 
+  const hit = () => {
+    drawCard(playerHand, setPlayerHand);
+  }
+
   const drawCard = (hand, setHand, faceUp=true) => {
     if (deck.length === 0) {
       alert('No more cards in the deck!');
@@ -34,7 +39,9 @@ function App() {
   return (
     <div>
       <div>
-        <h1>Dealer</h1>
+        <h1>
+          Dealer: {total(dealerHand)}
+        </h1>
         <div>
           <div>
             <Hand cards={dealerHand}></Hand>
@@ -42,7 +49,9 @@ function App() {
         </div>
       </div>
       <div>
-        <h1>Player</h1>
+        <h1>
+          Player: {total(playerHand)}
+        </h1>
         <div>
           <div>
             <Hand cards={playerHand}></Hand>
@@ -50,7 +59,7 @@ function App() {
           <div>
             {gameState === GameState.NOTDEALT 
               ? <button onClick={deal}>Deal</button>
-              : <><button>Hit</button><button>Stand</button></>
+              : <><button onClick={hit}>Hit</button><button>Stand</button></>
             }
           </div>
         </div>
