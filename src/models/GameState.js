@@ -1,5 +1,6 @@
 export const GameState = {
     NOTDEALT: 'NOTDEALT',
-    PLAYING: 'PLAYING',
-    ENDED: 'ENDEDs'
+    PLAYERS: 'PLAYERS',
+    DEALER: 'DEALER',
+    ENDED: 'ENDED'
 };

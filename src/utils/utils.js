@@ -1,6 +1,6 @@
-export default function total(cards) {
+export function total(cards) {
     let sum = 0;
-    
+
     for (var card of cards) {
         sum += rankValues[card.rank];
     }
@@ -12,11 +12,13 @@ export default function total(cards) {
         }
         index++;
     }
-    
+
     return sum;
 }
 
-const rankValues = {
+export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export const rankValues = {
     '2': 2,
     '3': 3,
     '4': 4,
