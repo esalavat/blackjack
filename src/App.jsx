@@ -1,129 +1,80 @@
-import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { GameState } from './models/GameState';
-import { createDeck, shuffleDeck } from './utils/deck';
 import { total, delay } from './utils/utils';
+import {
+  setGameState,
+  playerDraw,
+  dealerDraw,
+  revealDealerCards,
+} from './state/gameSlice';
 import Hand from './components/Hand';
 import './App.css';
 
 function App() {
-  const [state, setState] = useState({
-    deck: shuffleDeck(createDeck()),
-    playerHand: [],
-    dealerHand: [],
-    discard: [],
-    gameState: GameState.NOTDEALT
-  });
-
-  const setGameState = (gameState) => {
-    setState((prev) => { return {...prev, gameState: gameState}});
-  }
+  const { deck, playerHand, dealerHand, gameState } = useSelector((state) => state.game);
+  const dispatch = useDispatch();
   
   const deal = async () => {
-    setGameState(GameState.DEALING);
-    playerDraw();
+    dispatch(setGameState(GameState.DEALING));
+    dispatch(playerDraw());
     await delay(300);
-    dealerDraw(false);
+    dispatch(dealerDraw(false));
     await delay(300);
-    playerDraw();
+    dispatch(playerDraw());
     await delay(300);
-    dealerDraw();
-    setGameState(GameState.PLAYERS);
+    dispatch(dealerDraw(true));
+    dispatch(setGameState(GameState.PLAYERS));
   };
+  
   
   const hit = () => {
-    playerDraw();
-  }
-  
-  const stand = () => {
-    setGameState(GameState.DEALER);
-    dealerDrawDown();
-  }
-  
-  const dealerDrawDown = async () => {
-    await setState((prev) => {
-      console.log("drawDown total: ", total(prev.dealerHand), prev.dealerHand);
-      
-      let newState = {...prev, dealerHand: prev.dealerHand.map(x => { return { ...x, faceUp: true } })};
-      
-      if (prev.gameState == GameState.DEALER && total(prev.dealerHand) < 17) {
-        const newCard = {...prev.deck[0]};
-        newCard.faceUp = true;
-      
-        newState.deck = prev.deck.slice(1);
-        newState.dealerHand = [...newState.dealerHand, newCard];
-        
-        setTimeout(dealerDrawDown,300);
-      } else {
-        endHand();
-      }
+    dispatch(playerDraw());
+  };
 
-      return newState;
-    });
-  }
+  const stand = () => {
+    dispatch(setGameState(GameState.DEALER));
+    dealerDrawDown();
+  };
+
+  const dealerDrawDown = async () => {
+    dispatch(revealDealerCards());
+    
+    if (total(dealerHand) < 17) {
+      dispatch(dealerDraw(true));
+      await delay(300);
+      dealerDrawDown();
+    } else {
+      endHand();
+    }
+  };
 
   const endHand = () => {
-    setGameState(GameState.ENDED);
-    alert("Hand ended.");
-  }
-
-  const playerDraw = (faceUp = true) => {
-    setState((prev) => {
-
-      if (prev.deck.length === 0) {
-        alert('No more cards in the deck!');
-        return prev;
-      }
-      
-      const newCard = {...prev.deck[0]}; // Remove the top card
-      newCard.faceUp = faceUp;
-      
-      return {...prev,
-        deck: prev.deck.slice(1),
-        playerHand: [...prev.playerHand, newCard]
-      };
-    });
-  };
-  
-  const dealerDraw = (faceUp = true) => {
-    setState((prev) => {
-
-      if (prev.deck.length === 0) {
-        alert('No more cards in the deck!');
-        return prev;
-      }
-      
-      const newCard = {...prev.deck[0]}; // Remove the top card
-      newCard.faceUp = faceUp;
-      
-      return {...prev,
-        deck: prev.deck.slice(1),
-        dealerHand: [...prev.dealerHand, newCard]
-      };
-    });
+    dispatch(setGameState(GameState.ENDED));
+    alert('Hand ended.');
   };
 
   return (
     <div>
       <div>
         <h1>
-          Dealer: {total(state.dealerHand)}
+          Dealer: {total(dealerHand)}
         </h1>
         <div>
           <div>
-            <Hand cards={state.dealerHand}></Hand>
+            <Hand cards={dealerHand}></Hand>
           </div>
         </div>
       </div>
       <div>
         <h1>
-          Player: {total(state.playerHand)}
+          Player: {total(playerHand)}
         </h1>
         <div>
           <div>
-            <Hand cards={state.playerHand}></Hand>
+            <Hand cards={playerHand}></Hand>
           </div>
           <div>
-            {state.gameState === GameState.NOTDEALT
+            {gameState === GameState.NOTDEALT
               ? <button onClick={deal}>Deal</button>
               : <><button onClick={hit}>Hit</button><button onClick={stand}>Stand</button></>
             }
