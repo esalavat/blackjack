@@ -9,6 +9,14 @@ export const dealerDrawDownThunk = () => async (dispatch, getState) => {
     await delay(300);
   }
   dispatch(setGameState(GameState.ENDED));
+
+  // Reshuffle deck if less than 10 cards remain
+  const state = getState();
+  if (state.game.deck.length < 10) {
+    dispatch({
+      type: 'game/reshuffleDeck',
+    });
+  }
 };
 import { createSlice } from '@reduxjs/toolkit';
 import { GameState } from '../models/GameState';
@@ -28,6 +36,10 @@ const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
+    reshuffleDeck(state) {
+      console.log("reshuffle");
+      state.deck = shuffleDeck(createDeck());
+    },
     setGameState(state, action) {
       state.gameState = action.payload;
     },
