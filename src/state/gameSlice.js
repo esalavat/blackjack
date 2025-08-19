@@ -9,7 +9,6 @@ export const dealerDrawDownThunk = () => async (dispatch, getState) => {
     await delay(300);
   }
   dispatch(setGameState(GameState.ENDED));
-  alert('Hand ended.');
 };
 import { createSlice } from '@reduxjs/toolkit';
 import { GameState } from '../models/GameState';
@@ -21,6 +20,8 @@ const initialState = {
   dealerHand: [],
   discard: [],
   gameState: GameState.NOTDEALT,
+  playerMoney: 100, // Starting money
+  bet: 1, // Default bet
 };
 
 const gameSlice = createSlice({
@@ -30,10 +31,35 @@ const gameSlice = createSlice({
     setGameState(state, action) {
       state.gameState = action.payload;
     },
+    clearHands(state) {
+      state.playerHand = [];
+      state.dealerHand = [];
+    },
+    setBet(state, action) {
+      const bet = action.payload;
+      if (bet >= 1 && bet <= state.playerMoney) {
+        state.bet = bet;
+      }
+    },
+    subtractBet(state) {
+      state.playerMoney -= state.bet;
+    },
+    resolveBet(state, action) {
+      // action.payload: 'win' | 'lose' | 'push'
+      if (action.payload === 'win') {
+        state.playerMoney += state.bet * 2;
+      } else if (action.payload === 'push') {
+        state.playerMoney += state.bet;
+      }
+      // lose: do nothing (bet already subtracted)
+    },
+    resetMoney(state) {
+      state.playerMoney = 100;
+    },
     playerDraw(state, action) {
       const faceUp = action.payload ?? true;
       if (state.deck.length === 0) {
-        alert('No more cards in the deck!');
+        // No more cards in the deck; do nothing
         return;
       }
       const newCard = { ...state.deck[0], faceUp };
@@ -43,7 +69,7 @@ const gameSlice = createSlice({
     dealerDraw(state, action) {
       const faceUp = action.payload ?? true;
       if (state.deck.length === 0) {
-        alert('No more cards in the deck!');
+        // No more cards in the deck; do nothing
         return;
       }
       const newCard = { ...state.deck[0], faceUp };
@@ -61,6 +87,10 @@ export const {
   playerDraw,
   dealerDraw,
   revealDealerCards,
+  setBet,
+  subtractBet,
+  resolveBet,
+  resetMoney,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;
