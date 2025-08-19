@@ -105,39 +105,42 @@ function App() {
           <div className="hand-wrapper">
             <Hand cards={playerHand} />
           </div>
-          <div className="money-row">
-            <strong>Money: ${playerMoney}</strong>
-            <span className="bet-row">
-              {gameState === GameState.NOTDEALT ? (
-                <label>
-                  Bet: $
-                  <input
-                    type="number"
-                    min={1}
-                    max={playerMoney}
-                    value={betInput}
-                    onChange={handleBetChange}
-                    className="bet-input"
-                    disabled={playerMoney < 1}
-                  />
-                </label>
-              ) : (
-                <span className="bet-amount">Bet: ${bet}</span>
-              )}
-            </span>
-          </div>
+          {/* money and bet moved to bottom */}
         </div>
       </div>
-      <div className="action-bar">
-        {gameState === GameState.NOTDEALT ? (
-          <button className="action-btn" onClick={deal} disabled={playerMoney < 1}>Deal</button>
-        ) : null}
-        {gameState === GameState.PLAYERS && (
-          <>
-            <button className="action-btn" onClick={hit}>Hit</button>
-            <button className="action-btn" onClick={stand}>Stand</button>
-          </>
-        )}
+      <div className="bottom-bar">
+        <div className="money-row">
+          <strong>Money: ${playerMoney}</strong>
+          <span className="bet-row">
+            {gameState === GameState.NOTDEALT ? (
+              <label>
+                Bet: $
+                <input
+                  type="number"
+                  min={1}
+                  max={playerMoney}
+                  value={betInput}
+                  onChange={handleBetChange}
+                  className="bet-input"
+                  disabled={playerMoney < 1}
+                />
+              </label>
+            ) : (
+              <span className="bet-amount">Bet: ${bet}</span>
+            )}
+          </span>
+        </div>
+        <div className="action-bar">
+          {gameState === GameState.NOTDEALT ? (
+            <button className="action-btn" onClick={deal} disabled={playerMoney < 1}>Deal</button>
+          ) : null}
+          {gameState === GameState.PLAYERS && (
+            <>
+              <button className="action-btn" onClick={hit}>Hit</button>
+              <button className="action-btn" onClick={stand}>Stand</button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
