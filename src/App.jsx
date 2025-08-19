@@ -43,30 +43,27 @@ function App() {
         <h1>
           Dealer: {total(dealerHand)}
         </h1>
-        <div>
-          <div>
-            <Hand cards={dealerHand}></Hand>
-          </div>
+        <div className="hand-wrapper">
+          <Hand cards={dealerHand}></Hand>
         </div>
       </div>
       <div>
         <h1>
           Player: {total(playerHand)}
         </h1>
+
+        <div className="hand-wrapper">
+          <Hand cards={playerHand}></Hand>
+        </div>
         <div>
-          <div>
-            <Hand cards={playerHand}></Hand>
-          </div>
-          <div>
-            {gameState === GameState.NOTDEALT
-              ? <button onClick={deal}>Deal</button>
-              : <><button onClick={hit}>Hit</button><button onClick={stand}>Stand</button></>
-            }
-          </div>
+          {gameState === GameState.NOTDEALT
+            ? <button onClick={deal}>Deal</button>
+            : <><button onClick={hit}>Hit</button><button onClick={stand}>Stand</button></>
+          }
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default App

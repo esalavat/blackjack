@@ -1,3 +1,8 @@
+.hand-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -38,6 +43,14 @@
 }
 
 /* App.css */
+.hand-list {
+  display: flex;
+  align-items: flex-end;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .card {
   display: inline-block;
   border: 1px solid #000;
