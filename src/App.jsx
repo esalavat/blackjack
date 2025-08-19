@@ -6,6 +6,7 @@ import {
   playerDraw,
   dealerDraw,
   revealDealerCards,
+  dealerDrawDownThunk,
 } from './state/gameSlice';
 import Hand from './components/Hand';
 import './App.css';
@@ -33,24 +34,7 @@ function App() {
 
   const stand = () => {
     dispatch(setGameState(GameState.DEALER));
-    dealerDrawDown();
-  };
-
-  const dealerDrawDown = async () => {
-    dispatch(revealDealerCards());
-    
-    if (total(dealerHand) < 17) {
-      dispatch(dealerDraw(true));
-      await delay(300);
-      dealerDrawDown();
-    } else {
-      endHand();
-    }
-  };
-
-  const endHand = () => {
-    dispatch(setGameState(GameState.ENDED));
-    alert('Hand ended.');
+    dispatch(dealerDrawDownThunk());
   };
 
   return (
