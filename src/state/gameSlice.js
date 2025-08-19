@@ -41,6 +41,13 @@ const gameSlice = createSlice({
         state.bet = bet;
       }
     },
+    placeBet(state, action) {
+      const bet = action.payload;
+      if (bet >= 1 && bet <= state.playerMoney) {
+        state.bet = bet;
+        state.playerMoney -= bet;
+      }
+    },
     subtractBet(state) {
       state.playerMoney -= state.bet;
     },
@@ -91,6 +98,7 @@ export const {
   subtractBet,
   resolveBet,
   resetMoney,
+  placeBet,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

@@ -7,8 +7,8 @@ import {
   dealerDraw,
   revealDealerCards,
   dealerDrawDownThunk,
-  subtractBet,
   resolveBet,
+  placeBet,
 } from './state/gameSlice';
 import Hand from './components/Hand';
 import './App.css';
@@ -33,18 +33,20 @@ function App() {
   };
 
   const deal = async () => {
-    if (bet > playerMoney) return;
-    // Clear hands before dealing
-    dispatch({ type: 'game/clearHands' });
-    dispatch(subtractBet());
-    dispatch(playerDraw());
-    await delay(300);
-    dispatch(dealerDraw(false));
-    await delay(300);
-    dispatch(playerDraw());
-    await delay(300);
-    dispatch(dealerDraw(true));
-    dispatch(setGameState(GameState.PLAYERS));
+  // Use betInput as the bet amount
+  if (betInput > playerMoney) return;
+  // Place the bet atomically (set bet and subtract money)
+  dispatch(placeBet(betInput));
+  // Clear hands before dealing
+  dispatch({ type: 'game/clearHands' });
+  dispatch(playerDraw());
+  await delay(300);
+  dispatch(dealerDraw(false));
+  await delay(300);
+  dispatch(playerDraw());
+  await delay(300);
+  dispatch(dealerDraw(true));
+  dispatch(setGameState(GameState.PLAYERS));
   };
 
   const hit = () => {
