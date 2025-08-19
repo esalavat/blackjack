@@ -17,6 +17,7 @@ import './App.css';
 
 import React, { useState } from 'react';
 
+
 function App() {
   const { deck, playerHand, dealerHand, gameState, playerMoney, bet } = useSelector((state) => state.game);
   const dispatch = useDispatch();
@@ -34,27 +35,23 @@ function App() {
   };
 
   const deal = async () => {
-  // Use betInput as the bet amount
-  if (betInput > playerMoney) return;
-  // Place the bet atomically (set bet and subtract money)
-  dispatch(placeBet(betInput));
-  // Clear hands before dealing
-  dispatch({ type: 'game/clearHands' });
-  dispatch(playerDraw());
-  await delay(300);
-  dispatch(dealerDraw(false));
-  await delay(300);
-  dispatch(playerDraw());
-  await delay(300);
-  dispatch(dealerDraw(true));
-  dispatch(setGameState(GameState.PLAYERS));
+    if (betInput > playerMoney) return;
+    dispatch(placeBet(betInput));
+    dispatch({ type: 'game/clearHands' });
+    dispatch(playerDraw());
+    await delay(300);
+    dispatch(dealerDraw(false));
+    await delay(300);
+    dispatch(playerDraw());
+    await delay(300);
+    dispatch(dealerDraw(true));
+    dispatch(setGameState(GameState.PLAYERS));
   };
 
   const hit = () => {
     dispatch(playerDraw());
-    // Check for bust after drawing
     setTimeout(() => {
-      if (total(playerHand.concat([{...deck[0], faceUp: true}])) > 21) {
+      if (total(playerHand.concat([{ ...deck[0], faceUp: true }])) > 21) {
         dispatch(revealDealerCards());
         dispatch(setGameState(GameState.ENDED));
       }
@@ -66,12 +63,10 @@ function App() {
     dispatch(dealerDrawDownThunk());
   };
 
-  // Handle end of hand: payout or not
   React.useEffect(() => {
     if (gameState === GameState.ENDED) {
       const result = getResult();
       dispatch(resolveBet(result));
-      // After a short delay, reset to NOTDEALT for new bet and deal
       setTimeout(() => {
         dispatch(setGameState(GameState.NOTDEALT));
       }, 1200);
@@ -79,7 +74,6 @@ function App() {
     // eslint-disable-next-line
   }, [gameState]);
 
-  // Handle bet input change
   const handleBetChange = (e) => {
     let value = parseInt(e.target.value, 10);
     if (isNaN(value)) value = 1;
@@ -90,58 +84,60 @@ function App() {
   };
 
   return (
-    <div>
-      <div>
-        <h1>
-          Dealer: {total(dealerHand.filter(card => card.faceUp))}
-        </h1>
-        <div className="hand-wrapper">
-          <Hand cards={dealerHand}></Hand>
+    <div className="app-outer">
+      <div className="main-area">
+        <div className="dealer-area">
+          <h1 className="label">Dealer: {total(dealerHand.filter(card => card.faceUp))}</h1>
+          <div className="hand-wrapper">
+            <Hand cards={dealerHand} />
+          </div>
+        </div>
+        <div className="player-area">
+          <h1 className="label">
+            Player: {total(playerHand)}
+            {gameState === GameState.ENDED && total(playerHand) > 21 && (
+              <span className="bust">Bust!</span>
+            )}
+            {gameState === GameState.ENDED && getResult() === 'win' && (
+              <span className="win">Win!</span>
+            )}
+          </h1>
+          <div className="hand-wrapper">
+            <Hand cards={playerHand} />
+          </div>
+          <div className="money-row">
+            <strong>Money: ${playerMoney}</strong>
+            <span className="bet-row">
+              {gameState === GameState.NOTDEALT ? (
+                <label>
+                  Bet: $
+                  <input
+                    type="number"
+                    min={1}
+                    max={playerMoney}
+                    value={betInput}
+                    onChange={handleBetChange}
+                    className="bet-input"
+                    disabled={playerMoney < 1}
+                  />
+                </label>
+              ) : (
+                <span className="bet-amount">Bet: ${bet}</span>
+              )}
+            </span>
+          </div>
         </div>
       </div>
-      <div>
-        <h1>
-          Player: {total(playerHand)}
-          {gameState === GameState.ENDED && total(playerHand) > 21 && (
-            <span style={{ color: 'red', marginLeft: 10 }}>Bust!</span>
-          )}
-          {gameState === GameState.ENDED && getResult() === 'win' && (
-            <span style={{ color: 'green', marginLeft: 10 }}>Win!</span>
-          )}
-        </h1>
-        <div className="hand-wrapper">
-          <Hand cards={playerHand}></Hand>
-        </div>
-        <div style={{ margin: '1em 0' }}>
-          <strong>Money: ${playerMoney}</strong>
-        </div>
-        {gameState === GameState.NOTDEALT && (
-          <div style={{ marginBottom: '1em' }}>
-            <label>
-              Bet: $
-              <input
-                type="number"
-                min={1}
-                max={playerMoney}
-                value={betInput}
-                onChange={handleBetChange}
-                style={{ width: 60 }}
-                disabled={playerMoney < 1}
-              />
-            </label>
-          </div>
+      <div className="action-bar">
+        {gameState === GameState.NOTDEALT ? (
+          <button className="action-btn" onClick={deal} disabled={playerMoney < 1}>Deal</button>
+        ) : null}
+        {gameState === GameState.PLAYERS && (
+          <>
+            <button className="action-btn" onClick={hit}>Hit</button>
+            <button className="action-btn" onClick={stand}>Stand</button>
+          </>
         )}
-        <div>
-          {gameState === GameState.NOTDEALT ? (
-            <button onClick={deal} disabled={playerMoney < 1}>Deal</button>
-          ) : null}
-          {gameState === GameState.PLAYERS && (
-            <>
-              <button onClick={hit}>Hit</button>
-              <button onClick={stand}>Stand</button>
-            </>
-          )}
-        </div>
       </div>
     </div>
   );

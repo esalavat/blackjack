@@ -3,11 +3,124 @@
   justify-content: center;
   width: 100%;
 }
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-outer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+.main-area {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: stretch;
+  min-height: 0;
+  padding-bottom: 120px; /* space for action bar */
+}
+
+.dealer-area, .player-area {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.dealer-area {
+  margin-top: 2rem;
+}
+.player-area {
+  margin-bottom: 2rem;
+}
+
+
+.label {
+  margin-bottom: 0.5em;
+  font-size: 2rem;
+  color: #222;
+}
+
+
+.bust {
+  color: #ff4d4f;
+  margin-left: 10px;
+}
+.win {
+  color: #4caf50;
+  margin-left: 10px;
+}
+
+
+.money-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2em;
+  margin: 1em 0 0.5em 0;
+  color: #222;
+}
+.bet-row {
+  margin-left: 2em;
+}
+.bet-input {
+  width: 80px;
+  font-size: 1.2em;
+  padding: 0.2em 0.5em;
+  border-radius: 6px;
+  border: 1px solid #888;
+  margin-left: 0.5em;
+}
+.bet-amount {
+  font-size: 1.2em;
+  margin-left: 0.5em;
+}
+
+.action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+  z-index: 100;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.3);
+  gap: 2em;
+}
+.action-btn {
+  font-size: 2rem;
+  padding: 0.7em 2.5em;
+  border-radius: 12px;
+  border: none;
+  background: #4caf50;
+  color: #fff;
+  margin: 0 1em;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+.action-btn:disabled {
+  background: #888;
+  cursor: not-allowed;
+}
+.action-btn:not(:disabled):hover {
+  background: #388e3c;
+  transform: translateY(-2px) scale(1.04);
 }
 
 .logo {
