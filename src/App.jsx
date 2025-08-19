@@ -9,6 +9,7 @@ import {
   dealerDrawDownThunk,
   resolveBet,
   placeBet,
+  setBet,
 } from './state/gameSlice';
 import Hand from './components/Hand';
 import './App.css';
